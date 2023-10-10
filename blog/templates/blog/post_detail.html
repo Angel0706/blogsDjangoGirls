@@ -6,6 +6,12 @@
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                     {% include './icons/pencil-fill.svg' %}
                 </a>
+                <a class="btn btn-secondary" href="{% url 'post_remove' pk=post.pk %}">
+                    {% include './icons/trash.svg' %}
+                </a>
+                <a class="btn btn-secondary" href="{% url 'get_excel' pk=post.pk %}">
+                    {% include './icons/file-earmark-excel.svg' %}
+                </a>
             {% endif %}
         </aside>
         {% if post.published_date %}

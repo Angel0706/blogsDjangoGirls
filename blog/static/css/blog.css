@@ -43,6 +43,10 @@ h4 {
     margin-right: 20px;
 }
 
+a .top-menu{
+    font-size: 50px;
+}
+
 .post {
     margin-bottom: 70px;
 }
@@ -54,7 +58,9 @@ h4 {
 
 .post > .date,
 .post > .actions {
+    margin-right: 1%;
     float: right;
+    position: relative;
 }
 
 .btn-secondary,

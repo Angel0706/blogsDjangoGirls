@@ -1,4 +1,12 @@
 {% extends 'blog/base.html' %}
+{% block export %}
+    <a href="{% url 'post_new' %}" class="top-menu" title="Add">
+        {% include './icons/plus-square.svg' %}
+    </a>
+    <a href="{% url 'get_excel_li' %}" class="top-menu" title="Export">
+        {% include './icons/file-earmark-excel.svg' %}
+    </a>
+{% endblock %}
 {% block content %}
     {% for post in posts %}
         <article class="post">
@@ -6,7 +14,6 @@
                 {{ post.published_date }}
             </time>
             <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-            <!--<p>{{ post.text|linebreaksbr }}</p>-->
             <hr>
         </article>
     {% endfor %}
