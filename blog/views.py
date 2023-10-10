@@ -3,7 +3,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404
 from .models import Post
-from .forms import PostForm 
+from .forms import PostForm
 import xlsxwriter
 import os
 import subprocess
@@ -62,21 +62,20 @@ def get_excel(request, pk):
     worksheet.set_column('B:B', 40)
     worksheet.set_column('D:D', 20)
     worksheet.write('A1', 'Titulo', bold)
-    worksheet.write('B1','Contenido', bold)
-    worksheet.write('C1','Autor', bold)
-    worksheet.write('D1','Fecha de publicación', bold)
-    worksheet.write('A2',post.title)
-    worksheet.write('B2',post.text)
-    worksheet.write('C2',str(post.author).capitalize())
-    worksheet.write_datetime('D2',date,date_format)
+    worksheet.write('B1', 'Contenido', bold)
+    worksheet.write('C1', 'Autor', bold)
+    worksheet.write('D1', 'Fecha de publicación', bold)
+    worksheet.write('A2', post.title)
+    worksheet.write('B2', post.text)
+    worksheet.write('C2', str(post.author).capitalize())
+    worksheet.write_datetime('D2', date, date_format)
     workbook.close()
     subprocess.Popen(filePath, shell=True)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    return redirect('post_detail', pk=post.pk)
 
 def get_excel_li(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
-    fileName = 'Posts'
-    filePath = (os.path.expanduser('~\\downloads\\'+fileName+'.xlsx'))
+    filePath = (os.path.expanduser('~\\downloads\\Posts.xlsx'))
     workbook = xlsxwriter.Workbook(filePath)
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({'bold': True})
