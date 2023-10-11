@@ -1,12 +1,12 @@
 from django.shortcuts import redirect
 from django.utils import timezone
-from datetime import datetime
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Post
 from .forms import PostForm
+from datetime import datetime
 import xlsxwriter
-import os
-import subprocess
+import io
 
 # Create your views here.
 
@@ -51,10 +51,10 @@ def post_remove(request, pk):
     return redirect('post_list')
 
 def get_excel(request, pk):
+    output = io.BytesIO()
     post = get_object_or_404(Post, pk=pk)
-    fileName = post.title+'-'+str(post.pk)
-    filePath = (os.path.expanduser('~\\downloads\\'+fileName+'.xlsx'))
-    workbook = xlsxwriter.Workbook(filePath)
+    fileName = (post.title+'-'+str(post.pk))+'.xlsx'
+    workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
     date_format = workbook.add_format({'num_format': 'd "de" mmmm yyyy'})
     bold = workbook.add_format({'bold': True})
@@ -70,13 +70,18 @@ def get_excel(request, pk):
     worksheet.write('C2', str(post.author).capitalize())
     worksheet.write_datetime('D2', date, date_format)
     workbook.close()
-    subprocess.Popen(filePath, shell=True)
-    return redirect('post_detail', pk=post.pk)
+    output.seek(0)
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename=%s' % fileName
+    return response
 
 def get_excel_li(request):
+    output = io.BytesIO()
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
-    filePath = (os.path.expanduser('~\\downloads\\Posts.xlsx'))
-    workbook = xlsxwriter.Workbook(filePath)
+    workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({'bold': True})
     date_format = workbook.add_format({'num_format': 'd "de" mmmm yyyy'})
@@ -93,5 +98,10 @@ def get_excel_li(request):
         fila+=1
     worksheet.autofit()
     workbook.close()
-    subprocess.Popen(filePath, shell=True)
-    return redirect('post_list')
+    output.seek(0)
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename=%s' % 'Post.xlsx'
+    return response
