@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from .models import Post
 from .forms import PostForm
 from datetime import datetime
+from rest_framework import viewsets
+from .serializer import PostSerializer
 import xlsxwriter
 import io
 
@@ -105,3 +107,7 @@ def get_excel_li(request):
     )
     response['Content-Disposition'] = 'attachment; filename=%s' % 'Post.xlsx'
     return response
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
